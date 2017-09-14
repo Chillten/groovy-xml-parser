@@ -21,16 +21,16 @@ class XmlPaser {
 
 
         rorg_info.each { k, v ->
-            injectPath(root?.УЗР, v)?.each {
+            injectPath(root?.УЗР, getPath(v))?.each {
                 print k
                 print ' = '
-                printNode(it)
+                printNode(it, v)
                 if (args.containsKey(k))
                     args.put(k, it?.text())
             }
         }
 
-        def main_org = args.get('I_NPF_TYPE')
+//        def main_org = args.get('I_NPF_TYPE')
 
         root?.УЗР?.Реорганизация?.Результат?.'*'?.each {
             println("============")
@@ -39,10 +39,10 @@ class XmlPaser {
             it?.НПФ?.each {
                 def node = it
                 npfFields.each { k, v ->
-                    injectPath(node, v)?.each {
+                    injectPath(node, getPath(v))?.each {
                         print k
                         print ' = '
-                        printNode(it)
+                        printNode(it, v)
                         if (args.containsKey(k))
                             args.put(k, it?.text())
                     }
@@ -57,43 +57,61 @@ class XmlPaser {
     void printNode(node) {
         println String.format('%s - %s', node?.name(), node?.text())
     }
+
+    void printNode(node, row) {
+        println String.format('%s - %s', node?.name(), parseType(row, node) )
+    }
+
+    String getPath(list) {
+        return list['path'].toString()
+    }
+
+    def parseType(type, node) {
+        if (type['type'] && node) {
+            switch (type['type']) {
+                case 'date': return Date.parse("yyyy-MM-dd", node?.text())
+            }
+        }
+        return node?.text()
+    }
+
     def npfFields = [
-            'I_NPF_NAME'           : 'Наименование',
-            'I_NPF_OGRN'           : 'ОГРН',
-            'I_NPF_ADDR_DEX'       : 'Адрес.Индекс',
-            'I_NPF_ADDR_REGION'    : 'Адрес.РоссийскийАдрес.Регион.Название',
-            'I_NPF_ADDR_REGION_S'  : 'Адрес.РоссийскийАдрес.Регион.Сокращение',
-            'I_NPF_ADDR_AREA'      : 'Адрес.РоссийскийАдрес.Район.Название',
-            'I_NPF_ADDR_AREA_S'    : 'Адрес.РоссийскийАдрес.Район.Сокращение',
-            'I_NPF_ADDR_CITY'      : 'Адрес.РоссийскийАдрес.Город.Название',
-            'I_NPF_ADDR_CITY_S'    : 'Адрес.РоссийскийАдрес.Город.Сокращение',
-            'I_NPF_ADDR_LOCALITY'  : 'Адрес.РоссийскийАдрес.НаселенныйПункт.Название',
-            'I_NPF_ADDR_LOCALITY_S': 'Адрес.РоссийскийАдрес.НаселенныйПункт.Сокращение',
-            'I_NPF_ADDR_STREET'    : 'Адрес.РоссийскийАдрес.Улица.Название',
-            'I_NPF_ADDR_STREET_S'  : 'Адрес.РоссийскийАдрес.Улица.Сокращение',
-            'I_NPF_ADDR_HOUSE'     : 'Адрес.РоссийскийАдрес.Дом.Номер', /*Номер?*/
-            'I_NPF_ADDR_BUILDG'    : 'Адрес.РоссийскийАдрес.Строение.Номер', /*Номер?*/
-            'I_NPF_ADDR_BLOCK'     : 'Адрес.РоссийскийАдрес.Корпус.Номер', /*Номер?*/
-            'I_NPF_ADDR_FLAT'      : 'Адрес.РоссийскийАдрес.Квартира.Номер', /*Номер?*/
+            'I_NPF_NAME'           : [path: 'Наименование'],
+            'I_NPF_OGRN'           : [path: 'ОГРН'],
+            'I_NPF_ADDR_DEX'       : [path: 'Адрес.Индекс'],
+            'I_NPF_ADDR_REGION'    : [path: 'Адрес.РоссийскийАдрес.Регион.Название'],
+            'I_NPF_ADDR_REGION_S'  : [path: 'Адрес.РоссийскийАдрес.Регион.Сокращение'],
+            'I_NPF_ADDR_AREA'      : [path: 'Адрес.РоссийскийАдрес.Район.Название'],
+            'I_NPF_ADDR_AREA_S'    : [path: 'Адрес.РоссийскийАдрес.Район.Сокращение'],
+            'I_NPF_ADDR_CITY'      : [path: 'Адрес.РоссийскийАдрес.Город.Название'],
+            'I_NPF_ADDR_CITY_S'    : [path: 'Адрес.РоссийскийАдрес.Город.Сокращение'],
+            'I_NPF_ADDR_LOCALITY'  : [path: 'Адрес.РоссийскийАдрес.НаселенныйПункт.Название'],
+            'I_NPF_ADDR_LOCALITY_S': [path: 'Адрес.РоссийскийАдрес.НаселенныйПункт.Сокращение'],
+            'I_NPF_ADDR_STREET'    : [path: 'Адрес.РоссийскийАдрес.Улица.Название'],
+            'I_NPF_ADDR_STREET_S'  : [path: 'Адрес.РоссийскийАдрес.Улица.Сокращение'],
+            'I_NPF_ADDR_HOUSE'     : [path: 'Адрес.РоссийскийАдрес.Дом.Номер'],
+            'I_NPF_ADDR_BUILDG'    : [path: 'Адрес.РоссийскийАдрес.Строение.Номер'],
+            'I_NPF_ADDR_BLOCK'     : [path: 'Адрес.РоссийскийАдрес.Корпус.Номер'],
+            'I_NPF_ADDR_FLAT'      : [path: 'Адрес.РоссийскийАдрес.Квартира.Номер'],
     ]
 
     def rorg_info = [
-            'I_DOC_SOURCE_INN'        : 'НПФ.ИНН',
-            'I_DOC_SOURCE_OGRN'        : 'НПФ.ОГРН',
-//            'I_DOC_SOURCE_NPF' : 'НПФ.Наименование',
-            'I_DOC_SOURCE_FORMAL_NAME': 'НПФ.НаименованиеФормализованное',
-            'I_NPF_LICENCE_DATE': 'НПФ.Лицензия.Дата',
-            'I_NPF_LICENCE_NUM': 'НПФ.Лицензия.Номер',
+            'I_DOC_SOURCE_INN'        : [path: 'НПФ.ИНН'],
+            'I_DOC_SOURCE_OGRN'       : [path: 'НПФ.ОГРН'],
+//            'I_DOC_SOURCE_NPF' : [path: 'НПФ.Наименование'],
+            'I_DOC_SOURCE_FORMAL_NAME': [path: 'НПФ.НаименованиеФормализованное'],
+            'I_NPF_LICENCE_DATE'      : [path: 'НПФ.Лицензия.Дата', type: 'date'],
+            'I_NPF_LICENCE_NUM'       : [path: 'НПФ.Лицензия.Номер'],
 
-            'I_RORG_DECISION_DATE'    : 'Реорганизация.РешениеБанка.Дата',
-            'I_RORG_DECISION_NUM'     : 'Реорганизация.РешениеБанка.Номер',
-            'I_RORG_FORM'             : 'Реорганизация.Форма',
+            'I_RORG_DECISION_DATE'    : [path: 'Реорганизация.РешениеБанка.Дата', type: 'date'],
+            'I_RORG_DECISION_NUM'     : [path: 'Реорганизация.РешениеБанка.Номер'],
+            'I_RORG_FORM'             : [path: 'Реорганизация.Форма'],
 
-            'I_EIO_NPF_FIRST_NAME'    : 'ЕиоНПФ.ФИО.Имя',
-            'I_EIO_NPF_MIDDLE_NAME'   : 'ЕиоНПФ.ФИО.Отчество',
-            'I_EIO_NPF_LAST_NAME'     : 'ЕиоНПФ.ФИО.Фамилия',
-            'I_EIO_NPF_POSITION'      : 'ЕиоНПФ.Должность',
-            'I_EIO_NPF_PHONE_NUM'     : 'ЕиоНПФ.Телефон',
+            'I_EIO_NPF_FIRST_NAME'    : [path: 'ЕиоНПФ.ФИО.Имя'],
+            'I_EIO_NPF_MIDDLE_NAME'   : [path: 'ЕиоНПФ.ФИО.Отчество'],
+            'I_EIO_NPF_LAST_NAME'     : [path: 'ЕиоНПФ.ФИО.Фамилия'],
+            'I_EIO_NPF_POSITION'      : [path: 'ЕиоНПФ.Должность'],
+            'I_EIO_NPF_PHONE_NUM'     : [path: 'ЕиоНПФ.Телефон'],
     ]
 
     def args = [
