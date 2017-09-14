@@ -3,14 +3,13 @@ package com.bogovich.xmlparser
 import groovy.util.slurpersupport.GPathResult
 
 class XmlPaser {
-    def filePath = 'C:/Users/aleksandr.bogovich/Desktop/my staff/practice/groovy-xml-parser/src/main/groovy/com/bogovich/xmlparser/ПФР_7707492166_000_УЗР_20160804_95af1d6c-b629-4c04-b633-acb65e3be7f3.XML'
     def root
 
     GPathResult injectPath(def root, String path) {
         return path.split(/\./).inject(root) { obj, node -> obj?."$node" } as GPathResult
     }
 
-    XmlPaser() {
+    XmlPaser(filePath) {
         this.root = new XmlSlurper(namespaceAware: false).parse(new File(filePath))
     }
 
@@ -62,7 +61,7 @@ class XmlPaser {
     }
 
     void printNode(node, row) {
-        println String.format('%s - %s', node?.name(), parseType(row, node) )
+        println String.format('%s - %s', node?.name(), parseType(row, node))
     }
 
     String getPath(list) {

@@ -3,8 +3,14 @@ version '1.0-SNAPSHOT'
 
 apply plugin: 'groovy'
 apply plugin: 'java'
+apply plugin: 'application'
 
+project.group = "com.bogovich"
 sourceCompatibility = 1.8
+
+sourceSets.main.groovy.srcDirs = ["src/main/groovy"]
+
+mainClassName = 'com.bogovich.XmlParseJava'
 
 repositories {
     mavenCentral()
