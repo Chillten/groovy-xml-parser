@@ -1,15 +1,15 @@
-package com.bogovich.xmlparser
+package com.bogovich.groovy.xmlparser
 
 import groovy.util.slurpersupport.GPathResult
 
-class XmlPaser {
+class ReorganisationXmlParser {
     def root
 
     GPathResult injectPath(def root, String path) {
         return path.split(/\./).inject(root) { obj, node -> obj?."$node" } as GPathResult
     }
 
-    XmlPaser(filePath) {
+    ReorganisationXmlParser(filePath) {
         this.root = new XmlSlurper(namespaceAware: false).parse(new File(filePath))
     }
 

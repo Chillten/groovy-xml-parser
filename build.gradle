@@ -5,12 +5,15 @@ apply plugin: 'groovy'
 apply plugin: 'java'
 apply plugin: 'application'
 
-project.group = "com.bogovich"
+mainClassName = "com.bogovich.xmlparser.XmlParseJava"
 sourceCompatibility = 1.8
 
-sourceSets.main.groovy.srcDirs = ["src/main/groovy"]
-
-mainClassName = 'com.bogovich.XmlParseJava'
+sourceSets {
+    main {
+        java { srcDirs = [] }
+        groovy { srcDirs = ["src/main/java", "src/main/groovy"] }
+    }
+}
 
 repositories {
     mavenCentral()
