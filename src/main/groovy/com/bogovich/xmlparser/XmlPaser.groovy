@@ -2,11 +2,8 @@ package com.bogovich.xmlparser
 
 import groovy.util.slurpersupport.GPathResult
 
-//def val = path.split( /\./ ).inject( root ) { obj, node -> obj?."$node" }?.text()
-//println "$path\t$val"
-
 class XmlPaser {
-    def filePath = 'C:/Users/aleksandr.bogovich/Desktop/uspn/Design&Analysis/Technical Specification/Альбом Форматов/АФ.2.14.13д от 31.07.2017/Примеры/ВСВО/НПФ/Входящие/ПФР_7707492166_000_УЗР_20160804_95af1d6c-b629-4c04-b633-acb65e3be7f3.XML'
+    def filePath = 'C:/Users/aleksandr.bogovich/Desktop/my staff/practice/groovy-xml-parser/src/main/groovy/com/bogovich/xmlparser/ПФР_7707492166_000_УЗР_20160804_95af1d6c-b629-4c04-b633-acb65e3be7f3.XML'
     def root
 
     GPathResult injectPath(def root, String path) {
@@ -22,17 +19,23 @@ class XmlPaser {
 
         rorg_info.each { k, v ->
             injectPath(root?.УЗР, getPath(v))?.each {
-                print k
-                print ' = '
+                print "${k} = "
                 printNode(it, v)
                 if (args.containsKey(k))
-                    args.put(k, it?.text())
+                    args.put(k, parseType(v, it))
             }
         }
 
 //        def main_org = args.get('I_NPF_TYPE')
 
+        def needToClean = []
+
         root?.УЗР?.Реорганизация?.Результат?.'*'?.each {
+            needToClean.each {
+                args.put(it, null)
+            }
+            needToClean = []
+
             println("============")
             println(it?.name())
             args.put('I_NPF_TYPE', it?.name())
@@ -40,16 +43,16 @@ class XmlPaser {
                 def node = it
                 npfFields.each { k, v ->
                     injectPath(node, getPath(v))?.each {
-                        print k
-                        print ' = '
+                        print "${k} = "
                         printNode(it, v)
-                        if (args.containsKey(k))
-                            args.put(k, it?.text())
+                        if (args.containsKey(k)) {
+                            args.put(k, parseType(v, it))
+                            needToClean.add(k)
+                        }
                     }
                 }
             }
             // Обработка
-//            if(args.get('I_NPF_TYPE') == )
             print args
         }
     }
