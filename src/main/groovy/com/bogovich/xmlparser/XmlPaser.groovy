@@ -73,6 +73,7 @@ class XmlPaser {
         if (type['type'] && node) {
             switch (type['type']) {
                 case 'date': return Date.parse("yyyy-MM-dd", node?.text())
+                case 'int': return Integer.parseInt(node?.text())
             }
         }
         return node?.text()
@@ -108,7 +109,7 @@ class XmlPaser {
 
             'I_RORG_DECISION_DATE'    : [path: 'Реорганизация.РешениеБанка.Дата', type: 'date'],
             'I_RORG_DECISION_NUM'     : [path: 'Реорганизация.РешениеБанка.Номер'],
-            'I_RORG_FORM'             : [path: 'Реорганизация.Форма'],
+            'I_RORG_FORM'             : [path: 'Реорганизация.Форма', type: 'int'],
 
             'I_EIO_NPF_FIRST_NAME'    : [path: 'ЕиоНПФ.ФИО.Имя'],
             'I_EIO_NPF_MIDDLE_NAME'   : [path: 'ЕиоНПФ.ФИО.Отчество'],
